@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CSS Animation Composition — Old vs New</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 44px 20px;
+        font-family: system-ui, sans-serif;
+        color: #f8fafc;
+        background: #0b1020;
+      }
+      .page {
+        width: min(920px, 100%);
+        margin: auto;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .eyebrow {
+        color: #93c5fd;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 10px 0;
+        font-size: clamp(28px, 5vw, 42px);
+      }
+      .subtitle {
+        margin: 0;
+        color: #aab4c8;
+        line-height: 1.6;
+      }
+      .comparison {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .card {
+        padding: 22px;
+        border: 1px solid #27334d;
+        border-radius: 18px;
+        background: #121a2d;
+      }
+      .card.new {
+        border-color: #256b59;
+      }
+      .tag {
+        display: inline-block;
+        margin-bottom: 14px;
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: #26334d;
+        color: #cbd5e1;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .new .tag {
+        background: #123d34;
+        color: #86efac;
+      }
+      h2 {
+        margin: 0 0 6px;
+        font-size: 20px;
+      }
+      .card p {
+        min-height: 44px;
+        margin: 0;
+        color: #aab4c8;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .stage {
+        display: flex;
+        align-items: center;
+        height: 150px;
+        margin: 18px 0;
+        padding: 0 12px;
+        overflow: hidden;
+        border: 1px dashed #35415a;
+        border-radius: 12px;
+        background: linear-gradient(
+          90deg,
+          transparent 49.7%,
+          #334155 50%,
+          transparent 50.3%
+        );
+      }
+      .moving-box {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #60a5fa, #8b5cf6);
+        box-shadow: 0 10px 28px #0005;
+        transform: translateX(50px) rotate(45deg);
+      }
+      .moving-box span {
+        color: white;
+        font-size: 11px;
+        font-weight: 800;
+        transform: rotate(-45deg);
+      }
+      .old .moving-box {
+        animation: move-old 2s ease-in-out both;
+      }
+      .new .moving-box {
+        animation: move-new 2s ease-in-out both;
+        animation-composition: accumulate;
+      }
+      @keyframes move-old {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(100px);
+        }
+      }
+      @keyframes move-new {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(100px);
+        }
+      }
+      pre {
+        min-height: 116px;
+        margin: 0;
+        padding: 14px;
+        overflow-x: auto;
+        border-radius: 10px;
+        background: #090e1a;
+        color: #dbeafe;
+        font:
+          12px/1.7 ui-monospace,
+          monospace;
+      }
+      .highlight {
+        color: #86efac;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        margin: 26px 0 12px;
+      }
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 24px;
+        color: #07111f;
+        background: #93c5fd;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #bfdbfe;
+      }
+      .hint {
+        text-align: center;
+        color: #8290a8;
+        font-size: 12px;
+      }
+      @media (max-width: 680px) {
+        body {
+          padding: 32px 14px;
+        }
+        .comparison {
+          grid-template-columns: 1fr;
+        }
+        .card p {
+          min-height: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <div class="eyebrow">Modern CSS · Animation</div>
+        <h1>Old vs New</h1>
+        <p class="subtitle">
+          What happens when an animation changes a transform that already
+          exists?
+        </p>
+      </header>
+      <section class="comparison">
+        <article class="card old" id="oldCard">
+          <span class="tag">OLD WAY · DEFAULT REPLACE</span>
+          <h2>Without accumulate</h2>
+          <p>The animation replaces the original transform while it runs.</p>
+          <div class="stage">
+            <div class="moving-box"><span>CSS</span></div>
+          </div>
+          <pre>
+.target {
+  transform: translateX(50px) rotate(45deg);
+  animation: move 2s;
+  /* default: replace */
+}
+</pre
+          >
+        </article>
+        <article class="card new" id="newCard">
+          <span class="tag">NEW WAY · ACCUMULATE</span>
+          <h2>With accumulate</h2>
+          <p>The animation is combined with the original transform.</p>
+          <div class="stage">
+            <div class="moving-box"><span>CSS</span></div>
+          </div>
+          <pre>.target {
+  transform: translateX(50px) rotate(45deg);
+  animation: move 2s;
+  <span class="highlight">animation-composition: accumulate;</span>
+}</pre>
+        </article>
+      </section>
+      <div class="controls">
+        <button id="playButton" type="button">▶ Play comparison</button>
+      </div>
+      <p class="hint">
+        Watch both boxes at the same time. The animation runs for 2 seconds.
+      </p>
+    </main>
+    <script>
+      const playButton = document.querySelector("#playButton");
+      const cards = [
+        document.querySelector("#oldCard"),
+        document.querySelector("#newCard"),
+      ];
+      playButton.addEventListener("click", () => {
+        cards.forEach((card) => {
+          const box = card.querySelector(".moving-box");
+          box.style.animation = "none";
+          void box.offsetWidth;
+          box.style.animation = "";
+        });
+      });
+    </script>
+  </body>
+</html>
